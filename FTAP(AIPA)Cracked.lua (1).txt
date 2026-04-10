@@ -276,35 +276,22 @@ local loadSuccess = pcall(function()
     Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 end)
 
-if not loadSuccess or not Rayfield then
+if not loadSuccess or not Rayfeld then
     print("Rayfield 로드 실패! 재시도...")
     task.wait(1)
     Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 end
 
 print("Rayfield 로드 완료")
-
--- ================== Window 생성 (설정 저장 ON) ==================
+-- ================== Window 생성 ==================
 local Window = Rayfield:CreateWindow({
     Name = "Ftap | Np",
     Icon = 0,
     Theme = NP,
-    ToggleUIKeybind = "T",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "Rayfield",
-        FileName = "NP_FTAP_Config_v3"
-    }
+    ToggleUIKeybind = "T"
 })
 
--- 설정 자동 불러오기
-task.spawn(function()
-    task.wait(2)
-    pcall(function()
-        Rayfield:LoadConfiguration()
-    end)
-    print("설정 불러오기 완료")
-end)
+print("Window 생성 완료")
 G = rs.GrabEvents
 G:WaitForChild("EndGrabEarly"):Destroy()
 Instance.new("RemoteEvent", G).Name = "EndGrabEarly"
