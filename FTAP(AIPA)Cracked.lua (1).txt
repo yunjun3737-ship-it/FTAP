@@ -8953,5 +8953,5 @@ end)
 
 -- 게임 나갔다 들어와도 다시 실행되도록 (큐 온 텔레포트)
 if queue_on_teleport then
-    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.lua%20(1).txt"))()"))()')
+    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.lua%20(1).txt"))()')
 end
