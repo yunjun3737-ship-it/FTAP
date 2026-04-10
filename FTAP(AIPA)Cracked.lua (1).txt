@@ -9057,3 +9057,24 @@ task.spawn(function()
         AutoSitBlobman()
     end
 end)
+
+task.spawn(function()
+    task.wait(0.1)  -- 로드 안정화 대기
+
+    while true do
+        task.wait(0.1)
+        
+        local char = plr.Character
+        if not char then continue end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then continue end
+        
+        -- Blobman에 앉아있는지 확인
+        local seat = hum.SeatPart
+        if seat and seat.Parent and seat.Parent.Name == "CreatureBlobman" then
+            -- Blobman 속도 강제 100으로 고정
+            hum.WalkSpeed = 100
+        end
+    end
+end)
