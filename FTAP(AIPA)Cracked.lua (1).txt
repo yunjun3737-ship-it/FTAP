@@ -9007,3 +9007,53 @@ task.spawn(function()
         )
     end)
 end)
+
+
+-- ================== 자동 Blobman 소환 + 즉시 앉기 ==================
+task.spawn(function()
+    task.wait(3)  -- 스크립트 로드 안정화 대기
+
+    local function AutoSitBlobman()
+        local char = plr.Character
+        if not char then return end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then return end
+
+        -- 이미 앉아있으면 스킵
+        if hum.SeatPart then return end
+
+        -- 인벤토리에 Blobman 있는지 확인
+        local myInv = workspace:FindFirstChild(plr.Name .. "SpawnedInToys")
+        local blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+
+        if not blob then
+            -- Blobman 없으면 자동 소환
+            local spawnRemote = rs:FindFirstChild("MenuToys") and rs.MenuToys:FindFirstChild("SpawnToyRemoteFunction")
+            if spawnRemote then
+                pcall(function()
+                    spawnRemote:InvokeServer("CreatureBlobman", char.HumanoidRootPart.CFrame, Vector3.new(0,0,0))
+                end)
+                task.wait(1)  -- 소환 대기
+                blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+            end
+        end
+
+        if blob then
+            local seat = blob:FindFirstChildWhichIsA("VehicleSeat")
+            if seat and seat.Occupant == nil then
+                seat:Sit(hum)
+                print("Blobman 자동 소환 + 앉기 완료")
+            end
+        end
+    end
+
+    -- 스크립트 실행 즉시 한 번 실행
+    AutoSitBlobman()
+
+    -- 0.5초마다 한 번씩 체크 (Blobman 사라지면 다시 소환+앉기)
+    while true do
+        task.wait(0.5)
+        AutoSitBlobman()
+    end
+end)
