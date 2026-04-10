@@ -8923,3 +8923,45 @@ if v:IsA("BasePart") then v.CustomPhysicalProperties = PhysicalProperties.new(0.
 end
 
 Logger()
+
+-- ================== 저장 포기 후 추천 기능 ==================
+
+print("AIPA 스크립트 로드 완료")
+
+-- 시작 시 자동으로 켜고 싶은 기능들
+task.spawn(function()
+    task.wait(3)  -- 로드 안정화 대기
+
+    -- 여기서 자주 쓰는 기능 자동 ON
+    AntiGrabF(true)           -- Anti-Grab 자동 켜기
+    AntiBlobT = true
+    AntiBlobF()               -- Anti-Blob 자동 켜기
+    masslessT = true
+    masslessF()               -- Anti-Massless 자동 켜기
+
+    Rayfield:Notify({
+        Title = "AIPA 스크립트 실행됨",
+        Content = "Anti-Grab, Anti-Blob, Anti-Massless 자동 적용",
+        Duration = 5,
+        Image = 0
+    })
+
+    print("자동 설정 적용 완료")
+end)
+
+if queue_on_teleport then
+    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.lua%20(1).txt"))()')
+end
+
+-- ================== 실행 시 자동 채팅 ==================
+task.spawn(function()
+    task.wait(2)  -- 스크립트가 완전히 로드된 후 약간 대기
+    
+    local TextChatService = game:GetService("TextChatService")
+    
+    pcall(function()
+        if TextChatService.TextChannels and TextChatService.TextChannels.RBXGeneral then
+            TextChatService.TextChannels.RBXGeneral:SendAsync("AIPA가 실행되었습니다 (Alpa has been executed. The owner is private.)")
+        end
+    end)
+end)
