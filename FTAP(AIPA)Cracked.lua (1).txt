@@ -1,5 +1,15 @@
 local FN_BYPASS = false
 local TESTPP = false
+
+-- ================== 설정 자동 저장 + 중복 실행  방지 ==================
+if _G.NP_FTAP_LOADED then return end
+_G.NP_FTAP_LOADED = true
+
+pcall(function()
+    makefolder("Rayfield")
+end)
+
+print("NP FTAP Script 시작 - 설정 저장 활성화")
 -- ================== Rayfield 안정 버전 (Build Mismatch 해결) ==================
 print("Rayfield 로드 시작...")
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
