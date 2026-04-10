@@ -8,16 +8,6 @@ pcall(function()
     end
 end)
 
--- Window 생성 부분 (기존 걸 아래처럼 바꿔!)
-local Window = Rayfield:CreateWindow({
-    Name = "Ftap | Np", 
-    Icon = 0, 
-    Theme = NP, 
-    ToggleUIKeybind = "T",
-    ConfigurationSaving = {
-        Enabled = true,           -- ← true로 변경 (저장 ON)
-        FolderName = "Rayfield",  -- 기본 폴더
-        FileName = "NP_FTAP_Config"  -- 파일 이름 (이 이름으로 저장됨)
     }
 })
 Players = game:GetService("Players")
