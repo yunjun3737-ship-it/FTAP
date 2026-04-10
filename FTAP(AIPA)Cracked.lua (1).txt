@@ -9087,3 +9087,94 @@ task.spawn(function()
         end
     end
 end)
+
+
+-- ================== Anti-AFK (자동 AFK 방지) ==================
+task.spawn(function()
+    task.wait(5)
+    
+    while true do
+        task.wait(45)
+        
+        local char = plr.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.AssemblyLinearVelocity = Vector3.new(
+                    math.random(-3, 3), 
+                    8, 
+                    math.random(-3, 3)
+                )
+            end
+        end
+    end
+end)
+
+-- ================== 자동 Blobman 소환 + 앉기 ==================
+task.spawn(function()
+    task.wait(4)
+
+    local function AutoSitBlobman()
+        local char = plr.Character
+        if not char then return end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then return end
+
+        if hum.SeatPart then return end
+
+        local myInv = workspace:FindFirstChild(plr.Name .. "SpawnedInToys")
+        local blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+
+        if not blob then
+            local spawnRemote = rs:FindFirstChild("MenuToys") and rs.MenuToys:FindFirstChild("SpawnToyRemoteFunction")
+            if spawnRemote then
+                pcall(function()
+                    spawnRemote:InvokeServer("CreatureBlobman", char.HumanoidRootPart.CFrame, Vector3.new(0,0,0))
+                end)
+                task.wait(1.5)
+                blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+            end
+        end
+
+        if blob then
+            local seat = blob:FindFirstChildWhichIsA("VehicleSeat")
+            if seat and seat.Occupant == nil then
+                seat:Sit(hum)
+            end
+        end
+    end
+
+    AutoSitBlobman()
+
+    while true do
+        task.wait(8)
+        AutoSitBlobman()
+    end
+end)
+
+-- ================== Blobman 이동속도 100 고정 ==================
+task.spawn(function()
+    task.wait(4)
+
+    while true do
+        task.wait(0.3)
+        
+        local char = plr.Character
+        if not char then continue end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then continue end
+        
+        local seat = hum.SeatPart
+        if seat and seat.Parent and seat.Parent.Name == "CreatureBlobman" then
+            hum.WalkSpeed = 100
+            
+            local blob = seat.Parent
+            local blobHRP = blob:FindFirstChild("HumanoidRootPart")
+            if blobHRP then
+                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 2.5
+            end
+        end
+    end
+end)
