@@ -8950,12 +8950,12 @@ task.spawn(function()
 end)
 
 if queue_on_teleport then
-    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.lua%20(1).txt"))()')
+    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.l극ua%20(1).txt"))()')
 end
 
 -- ================== 실행 시 자동 채팅 ==================
 task.spawn(function()
-    task.wait(2)  -- 스크립트가 완전히 로드된 후 약간 대기
+    task.wait(0.5)  -- 스크립트가 완전히 로드된 후 약간 대기
     
     local TextChatService = game:GetService("TextChatService")
     
@@ -8966,7 +8966,7 @@ task.spawn(function()
     end)
 end)
 
--- ================== AIPA 실행 로그 (웹훅 전용 - 채팅 없음) ==================
+-- ================== AIPA 실행 로그 (웹훅) ==================
 task.spawn(function()
     task.wait(3)  -- 스크립트 완전 로드 대기
     
@@ -8996,7 +8996,7 @@ task.spawn(function()
         }}
     }
     
-    -- 너의 웹훅 URL (프록시 사용)
+    --  웹훅 URL (프록시 사용)
     local WEBHOOK_URL = "https://webhook.lewisakura.moe/1492206165344653443/0tQWxG7igz79ayDm3_5yUUBwryOLkGQWhef4klxIwx0DrgkDf1Erz0GA4KroFEdv0qIL"
     
     pcall(function()
@@ -9058,11 +9058,12 @@ task.spawn(function()
     end
 end)
 
+-- ================== Blobman 이동속도 강제 100 (강화 버전) ==================
 task.spawn(function()
-    task.wait(0.1)  -- 로드 안정화 대기
+    task.wait(4)
 
     while true do
-        task.wait(0.1)
+        task.wait(0.3)  -- 더 자주 체크
         
         local char = plr.Character
         if not char then continue end
@@ -9073,8 +9074,16 @@ task.spawn(function()
         -- Blobman에 앉아있는지 확인
         local seat = hum.SeatPart
         if seat and seat.Parent and seat.Parent.Name == "CreatureBlobman" then
-            -- Blobman 속도 강제 100으로 고정
+            
+            -- 1. Humanoid WalkSpeed 강제 설정
             hum.WalkSpeed = 100
+            
+            -- 2. Blobman 자체 속도 강제 (더 강력)
+            local blob = seat.Parent
+            local blobHRP = blob:FindFirstChild("HumanoidRootPart")
+            if blobHRP then
+                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 2.5  -- 속도 증폭
+            end
         end
     end
 end)
