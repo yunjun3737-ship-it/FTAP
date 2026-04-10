@@ -1,15 +1,6 @@
 local FN_BYPASS = false
 local TESTPP = false
--- ================== 설정 자동 저장 강제 활성화 
-pcall(function()
-    if isfolder and isfolder("Rayfield") then
-    else
-        makefolder("Rayfield")
-    end
-end)
 
-    }
-})
 Players = game:GetService("Players")
 plr = game.Players.LocalPlayer
 cam = workspace.CurrentCamera
