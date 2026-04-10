@@ -5466,7 +5466,22 @@ end
 
 ----------------------------------------------------------------------------------------- [ 시작 설정 ]
 
-local Window = Rayfield:CreateWindow({Name = "Ftap | Np", Icon = 0, Theme = NP, ToggleUIKeybind = "T"})
+pcall(function()
+    if isfolder and isfolder("Rayfield") then
+        delfolder("Rayfield")
+    end
+end)
+local Window = Rayfield:CreateWindow({
+    Name = "Ftap | AIPA", 
+    Icon = 0, 
+    Theme = NP, 
+    ToggleUIKeybind = "T",
+    ConfigurationSaving = {
+        Enabled = false,        -- 저장 기능 완전 OFF
+        FolderName = nil,
+        FileName = "NP_Config"
+    }
+})
 
 local playerTab = Window:CreateTab("메인", 0)
 local grabTab = Window:CreateTab("그랩", 0)
