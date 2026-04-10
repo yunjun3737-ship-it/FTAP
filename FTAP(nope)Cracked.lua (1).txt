@@ -1,6 +1,25 @@
 local FN_BYPASS = false
 local TESTPP = false
+-- ================== 설정 자동 저장 강제 활성화 
+pcall(function()
+    if isfolder and isfolder("Rayfield") then
+    else
+        makefolder("Rayfield")
+    end
+end)
 
+-- Window 생성 부분 (기존 걸 아래처럼 바꿔!)
+local Window = Rayfield:CreateWindow({
+    Name = "Ftap | Np", 
+    Icon = 0, 
+    Theme = NP, 
+    ToggleUIKeybind = "T",
+    ConfigurationSaving = {
+        Enabled = true,           -- ← true로 변경 (저장 ON)
+        FolderName = "Rayfield",  -- 기본 폴더
+        FileName = "NP_FTAP_Config"  -- 파일 이름 (이 이름으로 저장됨)
+    }
+})
 Players = game:GetService("Players")
 plr = game.Players.LocalPlayer
 cam = workspace.CurrentCamera
@@ -149,7 +168,6 @@ function PcldOwner()
     end)
 end
 
-PcldOwner()
 
 function SpawnCFrame()
     local camPart
@@ -216,8 +234,6 @@ function SpawnCFrame()
                  originalRotation = myPO.CFrame.Rotation * CFrame.Angles(math.rad(-90), 0, 0)
                 camPart.CFrame = CFrame.new(targetPosition) * originalRotation
 
-                camPart.Name = "SpawnCF"
-            elseif hrp then
                 rayParams.FilterDescendantsInstances = {char, camPart}
 
                  offset = hrp.Position + (lastHRPVelocity * (ping + 0.15))
