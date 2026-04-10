@@ -1,4 +1,4 @@
-local FN_BYPASS = false
+ㄴlocal FN_BYPASS = false
 local TESTPP = false
 
 -- ================== 설정 자동 저장 + 중복 실행  방지 ==================
@@ -8951,6 +8951,7 @@ task.spawn(function()
     print("자동 설정 적용 완료")
 end)
 
+-- 게임 나갔다 들어와도 다시 실행되도록 (큐 온 텔레포트)
 if queue_on_teleport then
-    queue_on_teleport('loadstring(game:HttpGet("loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.lua%20(1).txt"))()"))()')
+    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.lua%20(1).txt"))()"))()')
 end
