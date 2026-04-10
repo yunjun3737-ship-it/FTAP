@@ -5472,12 +5472,12 @@ pcall(function()
     end
 end)
 local Window = Rayfield:CreateWindow({
-    Name = "Ftap | AIPA", 
+    Name = "FTAP(반물사) | AIPA", 
     Icon = 0, 
-    Theme = NP, 
+    Theme = AP, 
     ToggleUIKeybind = "T",
     ConfigurationSaving = {
-        Enabled = false,        -- 저장 기능 완전 OFF
+        Enabled = true,        -- 저장 기능 완전 OFF
         FolderName = nil,
         FileName = "NP_Config"
     }
