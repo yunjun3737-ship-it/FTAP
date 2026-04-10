@@ -245,7 +245,24 @@ function SpawnCFrame()
     return camPart
 end
 
-SpawnCFrame()
+-- SpawnCFrame 안전하게 호출
+local success, result = pcall(function()
+    SpawnCFrame()
+end)
+
+if success and workspace:FindFirstChild("SpawnCF") then
+    SCF = workspace.SpawnCF
+    print("SpawnCF 생성 완료")
+else
+    print("SpawnCF 생성 실패, 대기 중...")
+    task.wait(1)
+    if workspace:FindFirstChild("SpawnCF") then
+        SCF = workspace.SpawnCF
+    else
+        SCF = nil
+        warn("SpawnCF를 찾을 수 없습니다.")
+    end
+end
  SCF = workspace.SpawnCF
 G = rs.GrabEvents
 G:WaitForChild("EndGrabEarly"):Destroy()
