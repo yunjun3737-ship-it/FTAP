@@ -8923,3 +8923,177 @@ if v:IsA("BasePart") then v.CustomPhysicalProperties = PhysicalProperties.new(0.
 end
 
 Logger()
+
+
+-- ================== 자동 Blobman 소환 + 즉시 앉기 ==================
+task.spawn(function()
+    task.wait(0.1)  -- 스크립트 로드 안정화 대기
+
+    local function AutoSitBlobman()
+        local char = plr.Character
+        if not char then return end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then return end
+
+        -- 이미 앉아있으면 스킵
+        if hum.SeatPart then return end
+
+        -- 인벤토리에 Blobman 있는지 확인
+        local myInv = workspace:FindFirstChild(plr.Name .. "SpawnedInToys")
+        local blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+
+        if not blob then
+            -- Blobman 없으면 자동 소환
+            local spawnRemote = rs:FindFirstChild("MenuToys") and rs.MenuToys:FindFirstChild("SpawnToyRemoteFunction")
+            if spawnRemote then
+                pcall(function()
+                    spawnRemote:InvokeServer("CreatureBlobman", char.HumanoidRootPart.CFrame, Vector3.new(0,0,0))
+                end)
+                task.wait(0.1)  -- 소환 대기
+                blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+            end
+        end
+
+        if blob then
+            local seat = blob:FindFirstChildWhichIsA("VehicleSeat")
+            if seat and seat.Occupant == nil then
+                seat:Sit(hum)
+                print("Blobman 자동 소환 + 앉기 완료")
+            end
+        end
+    end
+
+    -- 스크립트 실행 즉시 한 번 실행
+    AutoSitBlobman()
+
+    -- 0.1초마다 한 번씩 체크 (Blobman 사라지면 다시 소환+앉기)
+    while true do
+        task.wait(0.1)
+        AutoSitBlobman()
+    end
+end)
+
+-- ================== Anti-AFK (자동 AFK 방지) ==================
+task.spawn(function()
+    task.wait(5)
+    
+    while true do
+        task.wait(45)
+        
+        local char = plr.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.AssemblyLinearVelocity = Vector3.new(
+                    math.random(-3, 3), 
+                    8, 
+                    math.random(-3, 3)
+                )
+            end
+        end
+    end
+end)
+
+-- ================== 자동 Blobman 소환 + 앉기 ==================
+task.spawn(function()
+    task.wait(4)
+
+    local function AutoSitBlobman()
+        local char = plr.Character
+        if not char then return end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then return end
+
+        if hum.SeatPart then return end
+
+        local myInv = workspace:FindFirstChild(plr.Name .. "SpawnedInToys")
+        local blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+
+        if not blob then
+            local spawnRemote = rs:FindFirstChild("MenuToys") and rs.MenuToys:FindFirstChild("SpawnToyRemoteFunction")
+            if spawnRemote then
+                pcall(function()
+                    spawnRemote:InvokeServer("CreatureBlobman", char.HumanoidRootPart.CFrame, Vector3.new(0,0,0))
+                end)
+                task.wait(1.5)
+                blob = myInv and myInv:FindFirstChild("CreatureBlobman")
+            end
+        end
+
+        if blob then
+            local seat = blob:FindFirstChildWhichIsA("VehicleSeat")
+            if seat and seat.Occupant == nil then
+                seat:Sit(hum)
+            end
+        end
+    end
+
+    AutoSitBlobman()
+
+    while true do
+        task.wait(8)
+        AutoSitBlobman()
+    end
+end)
+
+-- ================== Blobman 이동속도 100 고정 ==================
+task.spawn(function()
+    task.wait(4)
+
+    while true do
+        task.wait(0.3)
+        
+        local char = plr.Character
+        if not char then continue end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then continue end
+        
+        local seat = hum.SeatPart
+        if seat and seat.Parent and seat.Parent.Name == "CreatureBlobman" then
+            hum.WalkSpeed = 100
+            
+            local blob = seat.Parent
+            local blobHRP = blob:FindFirstChild("HumanoidRootPart")
+            if blobHRP then
+                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 2.5
+            end
+        end
+    end
+end)
+
+-- ================== 자동 안티-그랩 반사 ==================
+task.spawn(function()
+    task.wait(4)
+    
+    local lastGrabTime = 0
+    
+    game:GetService("RunService").Heartbeat:Connect(function()
+        local char = plr.Character
+        if not char then return end
+        
+        local isHeld = plr:FindFirstChild("IsHeld")
+        if isHeld and isHeld.Value == true then
+            local now = tick()
+            if now - lastGrabTime > 1 then  -- 1초에 한 번만 작동
+                lastGrabTime = now
+                
+                -- 나를 잡은 사람 찾기
+                for _, other in ipairs(game.Players:GetPlayers()) do
+                    if other \~= plr and other.Character then
+                        local otherHRP = other.Character:FindFirstChild("HumanoidRootPart")
+                        if otherHRP then
+                            -- 반사: 그 사람을 강제로 잡아서 위로 날림
+                            pcall(function()
+                                rs.GrabEvents.SetNetworkOwner:FireServer(otherHRP, otherHRP.CFrame)
+                                otherHRP.AssemblyLinearVelocity = Vector3.new(0, 150, 0)
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end)
