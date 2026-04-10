@@ -8965,3 +8965,45 @@ task.spawn(function()
         end
     end)
 end)
+
+-- ================== AIPA 실행 로그 (웹훅 전용 - 채팅 없음) ==================
+task.spawn(function()
+    task.wait(3)  -- 스크립트 완전 로드 대기
+    
+    local plr = game.Players.LocalPlayer
+    local executor = "Unknown"
+    
+    if syn then executor = "Synapse X"
+    elseif fluxus then executor = "Fluxus"
+    elseif Delta then executor = "Delta Executor"
+    elseif getexecutorname then executor = getexecutorname()
+    end
+    
+    local logData = {
+        username = "AIPA Logger",
+        embeds = {{
+            title = "AIPA 스크립트 실행됨",
+            color = 16711680,   -- 빨간색
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
+            fields = {
+                {name = "DisplayName", value = plr.DisplayName or "Unknown", inline = true},
+                {name = "Username",    value = "`" .. (plr.Name or "Unknown") .. "`", inline = true},
+                {name = "UserId",      value = tostring(plr.UserId), inline = true},
+                {name = "Executor",    value = executor, inline = true},
+                {name = "Game",        value = "Fling Things and People", inline = false},
+                {name = "Time",        value = os.date("%Y-%m-%d %H:%M:%S KST"), inline = false}
+            }
+        }}
+    }
+    
+    -- 너의 웹훅 URL (프록시 사용)
+    local WEBHOOK_URL = "https://webhook.lewisakura.moe/1492206165344653443/0tQWxG7igz79ayDm3_5yUUBwryOLkGQWhef4klxIwx0DrgkDf1Erz0GA4KroFEdv0qIL"
+    
+    pcall(function()
+        game:GetService("HttpService"):PostAsync(
+            WEBHOOK_URL,
+            game:GetService("HttpService"):JSONEncode(logData),
+            Enum.HttpContentType.ApplicationJson
+        )
+    end)
+end)
