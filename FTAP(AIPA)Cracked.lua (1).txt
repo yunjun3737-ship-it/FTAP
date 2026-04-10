@@ -267,23 +267,26 @@ task.spawn(function()
         SCF = workspace.SpawnCF
         print("SpawnCF 생성 성공")
     else
-        print("SpawnCFrame 호출 실패, 강제 생성 시도...")
-        
-        -- SpawnCF가 없으면 강제로 만들어줌
-        if not workspace:FindFirstChild("SpawnCF") then
-            local camPart = Instance.new("Part")
-            camPart.Name = "SpawnCF"
-            camPart.Transparency = 1
-            camPart.CanCollide = false
-            camPart.Anchored = true
-            camPart.Size = Vector3.new(1, 1, 1)
-            camPart.Parent = workspace
-            SCF = camPart
-            print("SpawnCF 강제 생성 완료")
-        else
-            SCF = workspace.SpawnCF
-        end
-    end
+        print("SpawnCFrame 호출 실패, 강제 생성공 실패")
+local Window = Rayfield:CreateWindow({
+    Name = "Ftap | Np",
+    Icon = 0,
+    Theme = NP,
+    ToggleUIKeybind = "T",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "Rayfield",
+        FileName = "NP_FTAP_Config_v2"   -- 파일 이름 변경 (이전 설정과 구분)
+    }
+})
+
+-- 스크립트가 로드된 후 설정 자동 불러오기
+task.spawn(function()
+    task.wait(1.5)
+    pcall(function()
+        Rayfield:LoadConfiguration()
+    end)
+    print("설정 불러오기 완료")
 end)
 G = rs.GrabEvents
 G:WaitForChild("EndGrabEarly"):Destroy()
