@@ -8950,7 +8950,7 @@ task.spawn(function()
 end)
 
 if queue_on_teleport then
-    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/yunjun3737-ship-it/FTAP/main/FTAP(AIPA)Cracked.l극ua%20(1).txt"))()')
+    queue_on_teleport('loadstring(game:HttpGet("?))()')
 end
 
 -- ================== 실행 시 자동 채팅 ==================
@@ -9063,7 +9063,7 @@ task.spawn(function()
     task.wait(4)
 
     while true do
-        task.wait(0.3)  -- 더 자주 체크
+        task.wait(0.3)  
         
         local char = plr.Character
         if not char then continue end
@@ -9082,7 +9082,7 @@ task.spawn(function()
             local blob = seat.Parent
             local blobHRP = blob:FindFirstChild("HumanoidRootPart")
             if blobHRP then
-                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 2.5  -- 속도 증폭
+                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 1.5 
             end
         end
     end
@@ -9168,13 +9168,48 @@ task.spawn(function()
         
         local seat = hum.SeatPart
         if seat and seat.Parent and seat.Parent.Name == "CreatureBlobman" then
-            hum.WalkSpeed = 100
+            hum.WalkSpeed = 200
             
             local blob = seat.Parent
             local blobHRP = blob:FindFirstChild("HumanoidRootPart")
             if blobHRP then
-                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 2.5
+                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 1.5
             end
         end
     end
+end)
+
+
+-- ================== 자동 안티-그랩 반사 ==================
+task.spawn(function()
+    task.wait(4)
+    
+    local lastGrabTime = 0
+    
+    game:GetService("RunService").Heartbeat:Connect(function()
+        local char = plr.Character
+        if not char then return end
+        
+        local isHeld = plr:FindFirstChild("IsHeld")
+        if isHeld and isHeld.Value == true then
+            local now = tick()
+            if now - lastGrabTime > 1 then  
+                lastGrabTime = now
+                
+                
+                for _, other in ipairs(game.Players:GetPlayers()) do
+                    if other \~= plr and other.Character then
+                        local otherHRP = other.Character:FindFirstChild("HumanoidRootPart")
+                        if otherHRP then
+    
+                            pcall(function()
+                                rs.GrabEvents.SetNetworkOwner:FireServer(otherHRP, otherHRP.CFrame)
+                                otherHRP.AssemblyLinearVelocity = Vector3.new(0, 150, 0)
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+    end)
 end)
