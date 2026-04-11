@@ -1,23 +1,27 @@
 local FN_BYPASS = false
 local TESTPP = false
 
+-- ================== 중복 실행 방지 ==================
 if _G.NP_FTAP_LOADED then return end
 _G.NP_FTAP_LOADED = true
 
 print("NP FTAP Script 시작")
 
--- Rayfield 안전 로드
-local Rayfield = nil
-local loadSuccess = pcall(function()
-    Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-end)
-
-if not loadSuccess or not Rayfield then
-    warn("Rayfield 로드 실패")
-    return
-end
-
+-- Rayfield 로드
+print("Rayfield 로드 시작...")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 print("Rayfield 로드 완료")
+
+Players = game:GetService("Players")
+plr = game.Players.LocalPlayer
+cam = workspace.CurrentCamera
+mouse = plr:GetMouse()
+uis = game:GetService("UserInputService")
+inv = workspace:WaitForChild(plr.Name.."SpawnedInToys")
+rs = game:GetService("ReplicatedStorage")
+RepStorage = game:GetService("ReplicatedStorage")
+rs2 = game:GetService("RunService")
+deb = game:GetService("Debris")
 Players = game:GetService("Players")
 plr = game.Players.LocalPlayer
 cam = workspace.CurrentCamera
