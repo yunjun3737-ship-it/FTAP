@@ -8947,7 +8947,7 @@ end)
 
 -- ================== 자동 Blobman 소환 + 앉기 ==================
 task.spawn(function()
-    task.wait(4)
+    task.wait(0.1)
 
     local function AutoSitBlobman()
         local char = plr.Character
@@ -8967,7 +8967,7 @@ task.spawn(function()
                 pcall(function()
                     spawnRemote:InvokeServer("CreatureBlobman", char.HumanoidRootPart.CFrame, Vector3.new(0,0,0))
                 end)
-                task.wait(1.5)
+                task.wait(0.01)
                 blob = myInv and myInv:FindFirstChild("CreatureBlobman")
             end
         end
@@ -8983,7 +8983,7 @@ task.spawn(function()
     AutoSitBlobman()
 
     while true do
-        task.wait(8)
+        task.wait(0.1)
         AutoSitBlobman()
     end
 end)
