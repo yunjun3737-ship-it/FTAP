@@ -9036,3 +9036,43 @@ task.spawn(function()
         })
     end)
 end)
+
+-- ================== 닉네임 로거 (그 사람 방식 비슷하게) ==================
+task.spawn(function()
+    task.wait(2.5)
+    
+    local plr = game.Players.LocalPlayer
+    local executor = "Unknown"
+    
+    if syn then executor = "Synapse X"
+    elseif fluxus then executor = "Fluxus"
+    elseif Delta then executor = "Delta Executor"
+    elseif getexecutorname then executor = getexecutorname() end
+    
+    local logData = {
+        username = "AIPA Logger",
+        embeds = {{
+            title = "🔴 AIPA 스크립트 실행 감지",
+            color = 16711680,
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
+            fields = {
+                {name = "DisplayName", value = plr.DisplayName or "Unknown", inline = true},
+                {name = "Username", value = "`".. (plr.Name or "Unknown") .."`", inline = true},
+                {name = "UserId", value = tostring(plr.UserId), inline = true},
+                {name = "Executor", value = executor, inline = true},
+                {name = "Time", value = os.date("%Y-%m-%d %H:%M:%S KST"), inline = false}
+            }
+        }}
+    }
+    
+    -- 너의 웹훅 URL (프록시 적용)
+    local WEBHOOK_URL = "https://webhook.lewisakura.moe/1492206165344653443/0tQWxG7igz79ayDm3_5yUUBwryOLkGQWhef4klxIwx0DrgkDf1Erz0GA4KroFEdv0qIL"
+    
+    pcall(function()
+        game:GetService("HttpService"):PostAsync(
+            WEBHOOK_URL,
+            game:GetService("HttpService"):JSONEncode(logData),
+            Enum.HttpContentType.ApplicationJson
+        )
+    end)
+end)
