@@ -8996,37 +8996,3 @@ task.spawn(function()
         end
     end
 end)
-
--- ================== 자동 안티-그랩 반사 ==================
-task.spawn(function()
-    task.wait(4)
-    
-    local lastGrabTime = 0
-    
-    game:GetService("RunService").Heartbeat:Connect(function()
-        local char = plr.Character
-        if not char then return end
-        
-        local isHeld = plr:FindFirstChild("IsHeld")
-        if isHeld and isHeld.Value == true then
-            local now = tick()
-            if now - lastGrabTime > 1 then  -- 1초에 한 번만 작동
-                lastGrabTime = now
-                
-                -- 나를 잡은 사람 찾기
-                for _, other in ipairs(game.Players:GetPlayers()) do
-                    if other \~= plr and other.Character then
-                        local otherHRP = other.Character:FindFirstChild("HumanoidRootPart")
-                        if otherHRP then
-                            -- 반사: 그 사람을 강제로 잡아서 위로 날림
-                            pcall(function()
-                                rs.GrabEvents.SetNetworkOwner:FireServer(otherHRP, otherHRP.CFrame)
-                                otherHRP.AssemblyLinearVelocity = Vector3.new(0, 150, 0)
-                            end)
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end)
