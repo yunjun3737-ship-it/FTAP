@@ -8972,27 +8972,3 @@ task.spawn(function()
         AutoSitBlobman()
     end
 end)
-
--- ================== Anti-AFK (자동 AFK 방지) ==================
-task.spawn(function()
-    task.wait(5)  -- 스크립트 로드 후 대기
-    
-    print("Anti-AFK 기능 활성화 (자리비움 방지)")
-    
-    while true do
-        task.wait(45)  -- 45초마다 한 번씩 작은 움직임
-        
-        local char = plr.Character
-        if char then
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                -- 아주 작은 점프 + 좌우 미세 움직임 (AFK 방지)
-                hrp.AssemblyLinearVelocity = Vector3.new(
-                    math.random(-3, 3), 
-                    8, 
-                    math.random(-3, 3)
-                )
-            end
-        end
-    end
-end)
