@@ -1556,9 +1556,9 @@ function loopPlayerBlobF() -- 블롭 룹1
                 else
                     processedHumanoids[player] = nil
                 end
-                task.wait(0)
+                task.wait(0.0005)
             end
-            task.wait(0.2)
+            task.wait(0.05)
         end
     end)
 end
