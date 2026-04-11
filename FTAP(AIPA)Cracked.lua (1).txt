@@ -1,0 +1,17 @@
+-- ================== 스크립트 도둑 자동 스팸 (채팅) ==================
+task.spawn(function()
+    task.wait(0)  -- 스크립트 완전 로드 후 시작
+    
+    local message = "###누########금!!!!"
+    
+    while true do
+        pcall(function()
+            local TCS = game:GetService("TextChatService")
+            if TCS.TextChannels and TCS.TextChannels.RBXGeneral then
+                TCS.TextChannels.RBXGeneral:SendAsync(message)
+            end
+        end)
+        
+        task.wait(0.85)  --
+    end
+end)
