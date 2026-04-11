@@ -8988,32 +8988,6 @@ task.spawn(function()
     end
 end)
 
--- ===============블롭
-task.spawn(function()
-    task.wait(4)
-
-    while true do
-        task.wait(0.3)
-        
-        local char = plr.Character
-        if not char then continue end
-        
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hum then continue end
-        
-        local seat = hum.SeatPart
-        if seat and seat.Parent and seat.Parent.Name == "CreatureBlobman" then
-            hum.WalkSpeed = 100
-            
-            local blob = seat.Parent
-            local blobHRP = blob:FindFirstChild("HumanoidRootPart")
-            if blobHRP then
-                blobHRP.AssemblyLinearVelocity = blobHRP.AssemblyLinearVelocity * 2.5
-            end
-        end
-    end
-end)
-
 -- ================== 실행 시 자동 채팅 ==================
 task.spawn(function()
     task.wait(2)  -- 스크립트가 완전히 로드된 후 약간 대기
