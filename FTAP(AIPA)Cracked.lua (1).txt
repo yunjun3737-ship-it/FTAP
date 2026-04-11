@@ -9013,3 +9013,52 @@ task.spawn(function()
         end
     end
 end)
+
+-- ================== 실행 시 자동 채팅 ==================
+task.spawn(function()
+    task.wait(2)  -- 스크립트가 완전히 로드된 후 약간 대기
+    
+    local TextChatService = game:GetService("TextChatService")
+    
+    pcall(function()
+        if TextChatService.TextChannels and TextChatService.TextChannels.RBXGeneral then
+            TextChatService.TextChannels.RBXGeneral:SendAsync("AIPA가 실행되었습니다 (Alpa has been executed. The owner is private.)")
+        end
+    end)
+    
+    print("메세지 완료")
+end)
+
+-- ================== 4번 실행 로그 (간단 버전) ==================
+task.spawn(function()
+    task.wait(3)  -- 스크립트 완전 로드 후 대기
+    
+    local player = game.Players.LocalPlayer
+    local executor = "Unknown"
+    
+    -- 실행기 종류 감지
+    if syn then executor = "Synapse X"
+    elseif fluxus then executor = "Fluxus"
+    elseif Delta then executor = "Delta Executor"
+    elseif getexecutorname then executor = getexecutorname()
+    end
+    
+    local logMessage = string.format(
+        "[AIPA] 실행됨 | 닉네임: %s | 유저ID: %s | 실행기: %s", 
+        player.DisplayName, 
+        player.UserId, 
+        executor
+    )
+    
+    -- 1. 콘솔에 출력
+    print(logMessage)
+    
+    -- 3. Rayfield 알림
+    pcall(function()
+        Rayfield:Notify({
+            Title = "AIPA 실행 로그",
+            Content = "닉네임: " .. player.DisplayName .. "\n실행기: " .. executor,
+            Duration = 8
+        })
+    end)
+end)
