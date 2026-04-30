@@ -1,54 +1,63 @@
--- Prison Pump - Paca Hub (Delta Executor 추천)
+-- Prison Pump | Paca Hub (최신 안정 버전 - 2026)
+-- Delta Executor에서 사용
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ActualMasterOogway/PacaHub/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ActualMasterOogway/PacaHub/main/Library.lua", true))()
 
 local Window = Library:CreateWindow({
     Name = "Prison Pump | Paca Hub",
-    Info = "by Grok",
+    Info = "by Grok • Delta",
     Folder = "PrisonPumpPaca"
 })
 
 -- ================== 메인 탭 ==================
-local MainTab = Window:CreateTab("🏠 메인")
+local Tab1 = Window:CreateTab("🏠 메인")
 
-MainTab:CreateSection("Auto Farm")
+Tab1:CreateSection("Auto Farm")
 
-MainTab:CreateButton({
-    Name = "Auto Eat Meat (고기 자동먹기)",
+Tab1:CreateButton({
+    Name = "Auto Eat Meat (고기 자동 먹기)",
     Callback = function()
-        Library:Notify("Auto Eat", "고기 자동 먹기 기능 준비중...", 3)
-    end
+        Library:Notify("Auto Eat", "아직 기능 추가 전입니다.", 3)
+    end,
 })
 
-MainTab:CreateButton({
+Tab1:CreateButton({
     Name = "Auto Train (자동 운동)",
     Callback = function()
-        Library:Notify("Auto Train", "자동 운동 기능 준비중...", 3)
-    end
+        Library:Notify("Auto Train", "아직 기능 추가 전입니다.", 3)
+    end,
 })
 
-MainTab:CreateToggle({
-    Name = "Infinite Stamina",
+Tab1:CreateToggle({
+    Name = "Infinite Stamina (무한 스테미나)",
     Default = false,
-    Callback = function(Value)
-        Library:Notify("Infinite Stamina", "현재 준비중입니다.", 2)
-    end
+    Callback = function(v)
+        Library:Notify("Infinite Stamina", "준비중...", 2)
+    end,
+})
+
+Tab1:CreateToggle({
+    Name = "Auto Grab Food",
+    Default = false,
+    Callback = function(v)
+        Library:Notify("Auto Grab", "준비중...", 2)
+    end,
 })
 
 -- ================== 설정 탭 ==================
-local SettingsTab = Window:CreateTab("⚙️ 설정")
+local Tab2 = Window:CreateTab("⚙️ 설정")
 
-SettingsTab:CreateSection("기타 옵션")
+Tab2:CreateSection("기타")
 
-SettingsTab:CreateButton({
+Tab2:CreateButton({
     Name = "Destroy GUI",
     Callback = function()
         Window:Destroy()
-    end
+    end,
 })
 
 Library:Notify({
     Title = "로드 완료 ✅",
-    Content = "Prison Pump Paca Hub가 로드되었습니다!\n원하는 기능 말해주면 바로 넣어줄게.",
+    Content = "Prison Pump Paca Hub 로드 성공!\n원하는 기능 말해주면 바로 만들어 넣어줄게.",
     Duration = 5
 })
