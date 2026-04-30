@@ -1,17 +1,154 @@
--- ================== 스크립트 도둑 자동 스팸 (채팅) ==================
-task.spawn(function()
-    task.wait(0)  -- 스크립트 완전 로드 후 시작
-    
-    local message = "###누########금!!!!"
-    
-    while true do
-        pcall(function()
-            local TCS = game:GetService("TextChatService")
-            if TCS.TextChannels and TCS.TextChannels.RBXGeneral then
-                TCS.TextChannels.RBXGeneral:SendAsync(message)
-            end
-        end)
-        
-        task.wait(0.85)  --
+-- ================== Linoria UI 로드 ==================
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/Library.lua"))()
+local ThemeManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/ThemeManager.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/SaveManager.lua"))()
+
+local Window = Library:CreateWindow({
+    Title = "FTAP | Linoria Edition",
+    Center = true,
+    AutoShow = true,
+})
+
+ThemeManager:SetLibrary(Library)
+ThemeManager:SetTheme("Dark")
+SaveManager:SetLibrary(Library)
+SaveManager:BuildConfigSection(Window)
+
+-- ================== 서비스 ==================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local plr = Players.LocalPlayer
+local cam = workspace.CurrentCamera
+local uis = UserInputService
+local rs = ReplicatedStorage
+
+-- ================== 변수 ==================
+local SuperThrowT = false
+local SuperThrowConnection = nil
+local ThrowStrength = 850
+
+local AutoClaimCashT = false
+local WingsT = false
+local WingsConnection = nil
+
+-- ================== 함수 ==================
+
+-- Super Throw
+function SuperThrowF()
+    if SuperThrowConnection then
+        SuperThrowConnection:Disconnect()
+        SuperThrowConnection = nil
     end
-end)
+    if not SuperThrowT then return end
+
+    SuperThrowConnection = RunService.Heartbeat:Connect(function()
+        if not SuperThrowT then return end
+        local grab = workspace:FindFirstChild("GrabParts")
+        if not grab then return end
+        local gp = grab:FindFirstChild("GrabPart")
+        if not gp then return end
+        local weld = gp:FindFirstChild("WeldConstraint")
+        if weld and weld.Part1 then
+            pcall(function()
+                weld.Part1.AssemblyLinearVelocity = cam.CFrame.LookVector * ThrowStrength + Vector3.new(0, 120, 0)
+            end)
+        end
+    end)
+end
+
+-- Auto Claim Cash
+function AutoClaimCashF()
+    task.spawn(function()
+        while AutoClaimCashT do
+            pcall(function()
+                for _, v in ipairs(workspace:GetDescendants()) do
+                    if v.Name:find("Cash") or v.Name:find("Money") or v.Name:find("Claim") then
+                        local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+                        if hrp and (v.Position - hrp.Position).Magnitude < 60 then
+                            firetouchinterest(hrp, v, 0)
+                            task.wait(0.03)
+                            firetouchinterest(hrp, v, 1)
+                        end
+                    end
+                end
+            end)
+            task.wait(1)
+        end
+    end)
+end
+
+-- Wings
+function WingsF()
+    if WingsConnection then
+        WingsConnection:Disconnect()
+        WingsConnection = nil
+    end
+    if not WingsT then return end
+
+    WingsConnection = RunService.Heartbeat:Connect(function()
+        if not WingsT then return end
+        local char = plr.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        if uis:IsKeyDown(Enum.KeyCode.Space) then
+            hrp.AssemblyLinearVelocity = Vector3.new(hrp.AssemblyLinearVelocity.X, 55, hrp.AssemblyLinearVelocity.Z)
+        end
+    end)
+end
+
+-- ================== UI ==================
+
+local MainTab = Window:AddTab("메인")
+local CombatTab = Window:AddTab("컴뱃")
+local SafetyTab = Window:AddTab("안전")
+local LoopTab = Window:AddTab("조지기")
+local FunTab = Window:AddTab("찌끄레기")
+
+-- FunTab에 기능 추가
+local SuperGroup = FunTab:AddLeftGroupbox("슈퍼 쓰로우")
+
+SuperGroup:AddToggle("SuperThrowToggle", {
+    Text = "슈퍼 쓰로우",
+    Default = false,
+    Callback = function(Value)
+        SuperThrowT = Value
+        SuperThrowF()
+    end
+})
+
+SuperGroup:AddInput("ThrowStrengthInput", {
+    Text = "Throw 힘",
+    Default = "850",
+    Numeric = true,
+    Callback = function(Value)
+        local num = tonumber(Value)
+        if num then ThrowStrength = num end
+    end
+})
+
+local CashGroup = FunTab:AddLeftGroupbox("오토 캐시")
+
+CashGroup:AddToggle("AutoClaimToggle", {
+    Text = "오토 클래임 캐시",
+    Default = false,
+    Callback = function(Value)
+        AutoClaimCashT = Value
+        AutoClaimCashF()
+    end
+})
+
+local WingsGroup = FunTab:AddLeftGroupbox("날개")
+
+WingsGroup:AddToggle("WingsToggle", {
+    Text = "날개 (Space로 상승)",
+    Default = false,
+    Callback = function(Value)
+        WingsT = Value
+        WingsF()
+    end
+end})
