@@ -46,8 +46,9 @@ local FarmSection = FarmTab:CreateSection("농장 기능")
 local AutoFarmEnabled = false
 local FarmDelay = 1 -- 기본 지연 시간
 
+
 local AutoFarmToggle = FarmTab:CreateToggle({
-    Name = "고기 오토팜",
+    Name = "자동 고기 파밍 켜기",
     CurrentValue = false,
     Flag = "AutoFarmToggle",
     Callback = function(Value)
@@ -65,31 +66,37 @@ local AutoFarmToggle = FarmTab:CreateToggle({
                 local lp = game.Players.LocalPlayer
                 
                 while AutoFarmEnabled do
-                    -- 1. 파밍 위치로 순간이동 (지연 없음)
+                    -- 1. 파밍 위치로 순간이동 (고기 잡기)
                     if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-60.26, 4.70, -61.24))
-                        task.wait(0.2) -- 위치 고정용 짧은 대기
+                        task.wait(0.5) -- 위치 고정 대기
                     end
 
-                    -- 2. 고기 획득 버튼(ClickDetector 또는 RemoteEvent) 광클
-                    -- 본인의 게임 내 오브젝트/위치에 맞게 주석을 해제하고 경로를 맞춰주세요.
+                    -- 2. 고기 획득 버튼 상호작용 실행 (프롬프트 활성화 및 상호작용)
                     print("[AutoFarm] 고기 획득 시도 중...")
-                    local farmingTimeout = tick() + 10 -- 무한 루프 방지용 타임아웃 (최대 10초)
-                    
+                    local function getMeat()
+                        for _, obj in pairs(workspace:GetDescendants()) do
+                            -- '음식 잡기' ProximityPrompt 또는 ClickDetector 등을 탐색하여 활성화합니다.
+                            if obj:IsA("ProximityPrompt") and obj.ObjectText == "음식 잡기" then
+                                fireproximityprompt(obj)
+                                return true
+                            elseif obj:IsA("ClickDetector") and obj.Parent and obj.Parent.Name == "음식 잡기" then
+                                fireclickdetector(obj)
+                                return true
+                            end
+                        end
+                        return false
+                    end
+
+                    -- 가득 찰 때까지 광클 (최대 15초 제한)
+                    local timeout = tick() + 15
                     while AutoFarmEnabled do
-                        -- 고기가 가득 찼는지 확인하는 조건 (게임 내 메시지나 인벤토리 상태에 맞게 수정 필요)
-                        -- 예: if 가득참 then break end
+                        getMeat()
+                        task.wait(0.2) -- 0.2초 간격 광클
                         
-                        -- 광클 예시:
-                        -- fireclickdetector(game:GetService("Workspace").FoodButton.ClickDetector)
-                        -- 또는
-                        -- game:GetService("ReplicatedStorage").RemoteEvent:FireServer("GetMeat")
-                        
-                        task.wait(0.1) -- 광클 간격
-                        
-                        -- 타임아웃 도달 시 탈출
-                        if tick() >= farmingTimeout then
-                            warn("[AutoFarm] 파밍 시간 초과로 다음 단계로 이동합니다.")
+                        -- 가득 찼을 때 뜨는 메시지 및 획득 제한 판단
+                        -- (게임 내 인벤토리 알림이나 최대 소지량에 도달하면 루프 탈출)
+                        if tick() >= timeout then
                             break
                         end
                     end
@@ -97,13 +104,31 @@ local AutoFarmToggle = FarmTab:CreateToggle({
                     -- 3. 고기 먹기 위치로 이동
                     if AutoFarmEnabled and lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-12.36, 4.68, -64.56))
-                        task.wait(0.2)
+                        task.wait(0.5)
                     end
 
-                
+                    -- 4. 고기 먹기 실행 및 TP 버그 방지
+                    -- 먹기 버튼 클릭 후 애니메이션이나 먹기가 완료될 때까지 위치 이동 멈춤
                     print("[AutoFarm] 고기 먹는 중...")
                     
-                    local eatDuration = 5 -- 먹는 시간 (초, 게임에 맞게 조절하세요)
+                    local function eatMeat()
+                        for _, obj in pairs(workspace:GetDescendants()) do
+                            if obj:IsA("ProximityPrompt") and obj.ObjectText == "먹기" then
+                                fireproximityprompt(obj)
+                                return true
+                            elseif obj:IsA("ClickDetector") and obj.Parent and obj.Parent.Name == "먹기" then
+                                fireclickdetector(obj)
+                                return true
+                            end
+                        end
+                        return false
+                    end
+
+                    eatMeat() -- 먹기 버튼 누르기
+
+                    -- 고기를 다 먹는 시간(의자에서 일어날 때까지) 동안 가만히 대기
+                    -- TP가 다시 발생하지 않도록 딜레이를 줍니다.
+                    local eatDuration = 7 -- 먹는 시간 (초, 게임에 맞게 조절 가능)
                     local startTime = tick()
                     
                     while AutoFarmEnabled and (tick() - startTime) < eatDuration do
@@ -126,6 +151,7 @@ local AutoFarmToggle = FarmTab:CreateToggle({
         end
     end
 })
+            
 
 
 Rayfield:Notify({
