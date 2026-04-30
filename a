@@ -1,9 +1,19 @@
+-- 중복 실행 방지: 이전에 켜져 있던 UI가 있다면 제거
+if getgenv().RayfieldWindows then
+    for _, win in pairs(getgenv().RayfieldWindows) do
+        win:Destroy() -- 기존 창 파괴
+    end
+    getgenv().RayfieldWindows = {}
+else
+    getgenv().RayfieldWindows = {}
+end
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "감옥 펌프 오토팜 (Prison Farm)",
-    LoadingTitle = "스크립트 인터페이스",
-    LoadingSubtitle = "by Gemini",
+    LoadingTitle = "Alpaca's Script Interface",
+    LoadingSubtitle = "by Alpaca", -- 제작자 이름 변경
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil, 
@@ -14,22 +24,22 @@ local Window = Rayfield:CreateWindow({
         Invite = "noinvitelink",
         RememberJoins = true
     },
-    KeySystem = false, -- 키 시스템 사용 안 함
+    KeySystem = true,
     KeySettings = {
-        Title = "Untitled",
+        Title = "알파 허브 입니다",
         Subtitle = "Key System",
         Note = "No method of obtaining the key is provided",
-        FileName = "Key",
+        FileName = "키",
         SaveKey = true,
         GrabKeyFromSite = false,
-        Key = {"Hello"}
+        Key = {"알파카"}
     }
 })
 
+table.insert(getgenv().RayfieldWindows, Window)
+
 -- 메인 탭 생성
 local FarmTab = Window:CreateTab("오토팜 (Auto Farm)", 4483362458)
-
--- 섹션 추가
 local FarmSection = FarmTab:CreateSection("농장 기능")
 
 -- 오토팜 토글 (기능 제외)
@@ -39,16 +49,14 @@ local AutoFarmToggle = FarmTab:CreateToggle({
     Flag = "AutoFarmToggle",
     Callback = function(Value)
         if Value then
-            -- 기능이 켜졌을 때 실행될 코드 자리
             print("오토팜이 활성화되었습니다.")
         else
-            -- 기능이 꺼졌을 때 실행될 코드 자리
             print("오토팜이 비활성화되었습니다.")
         end
     end
 })
 
--- 슬라이더 추가 (작업 속도/지연 시간 조절용)
+-- 슬라이더 추가
 local FarmSpeedSlider = FarmTab:CreateSlider({
     Name = "파밍 지연 시간 (초)",
     Range = {0.1, 5},
@@ -61,10 +69,9 @@ local FarmSpeedSlider = FarmTab:CreateSlider({
     end
 })
 
--- 경고 알림 표시
 Rayfield:Notify({
     Title = "성공",
-    Content = "오토팜 UI가 성공적으로 로드되었습니다!",
+    Content = "Alpaca의 오토팜 UI가 성공적으로 로드되었습니다!",
     Duration = 5,
     Image = 4483362458
 })
