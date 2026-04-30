@@ -1,14 +1,70 @@
--- 중복 실행 방지: 이전에 켜져 있던 UI가 있다면 제거
-if getgenv().RayfieldWindows then
-    for _, win in pairs(getgenv().RayfieldWindows) do
-        win:Destroy() -- 기존 창 파괴
-    end
-    getgenv().RayfieldWindows = {}
-else
-    getgenv().RayfieldWindows = {}
-end
+-- 오토팜 토글
+local AutoFarmToggle = FarmTab:CreateToggle({
+    Name = "자동 고기 파밍 켜기",
+    CurrentValue = false,
+    Flag = "AutoFarmToggle",
+    Callback = function(Value)
+        AutoFarmEnabled = Value
+        
+        if AutoFarmEnabled then
+            Rayfield:Notify({
+                Title = "활성화",
+                Content = "오토팜이 시작되었습니다.",
+                Duration = 3,
+                Image = 4483362458
+            })
+            
+            task.spawn(function()
+                local lp = game.Players.LocalPlayer
+                
+                while AutoFarmEnabled do
+                    -- [1단계] 고기 획득 위치로 이동 및 광클
+                    if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                        lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-60.26, 4.70, -61.24))
+                        task.wait(0.2) -- 텔레포트 지연
+                    end
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+                    -- 고기 획득을 위해 0.1초 간격으로 20번 광클 시도
+                    for i = 1, 20 do
+                        if not AutoFarmEnabled then break end
+                        -- 원격 이벤트(RemoteEvent) 또는 클릭을 통한 획득 시도
+                        -- (게임 환경에 따라 fireclickdetector나 RemoteEvent를 사용하세요)
+                        task.wait(0.1)
+                    end
+                    
+                    task.wait(0.5) -- 다음 단계로 넘어가기 전 짧은 대기
+
+                    -- [2단계] 먹기 위치로 이동
+                    if AutoFarmEnabled and lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                        lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-12.36, 4.68, -64.56))
+                        task.wait(0.2)
+                    end
+
+                    -- [3단계] 먹는 동작 수행 및 제자리 고정 (TP 버그 방지)
+                    -- 먹기 동작이 끝날 때까지 7초 동안 다른 동작을 멈춤
+                    local eatDuration = 7
+                    local startTime = tick()
+                    while AutoFarmEnabled and (tick() - startTime) < eatDuration do
+                        task.wait(1)
+                    end
+
+                    -- 슬라이더에 설정된 지연 시간 적용
+                    if AutoFarmEnabled then
+                        task.wait(FarmDelay)
+                    end
+                end
+            end)
+        else
+            Rayfield:Notify({
+                Title = "비활성화",
+                Content = "오토팜이 중지되었습니다.",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+    end
+})
+ame:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "감옥 펌프 오토팜 (Prison Farm)",
@@ -47,6 +103,7 @@ local AutoFarmEnabled = false
 local FarmDelay = 1 -- 기본 지연 시간
 
 
+-- 오토팜 토글
 local AutoFarmToggle = FarmTab:CreateToggle({
     Name = "자동 고기 파밍 켜기",
     CurrentValue = false,
@@ -66,76 +123,37 @@ local AutoFarmToggle = FarmTab:CreateToggle({
                 local lp = game.Players.LocalPlayer
                 
                 while AutoFarmEnabled do
-                    -- 1. 파밍 위치로 순간이동 (고기 잡기)
+                    -- [1단계] 고기 획득 위치로 이동 및 광클
                     if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-60.26, 4.70, -61.24))
-                        task.wait(0.5) -- 위치 고정 대기
+                        task.wait(0.2) -- 텔레포트 지연
                     end
 
-                    -- 2. 고기 획득 버튼 상호작용 실행 (프롬프트 활성화 및 상호작용)
-                    print("[AutoFarm] 고기 획득 시도 중...")
-                    local function getMeat()
-                        for _, obj in pairs(workspace:GetDescendants()) do
-                            -- '음식 잡기' ProximityPrompt 또는 ClickDetector 등을 탐색하여 활성화합니다.
-                            if obj:IsA("ProximityPrompt") and obj.ObjectText == "음식 잡기" then
-                                fireproximityprompt(obj)
-                                return true
-                            elseif obj:IsA("ClickDetector") and obj.Parent and obj.Parent.Name == "음식 잡기" then
-                                fireclickdetector(obj)
-                                return true
-                            end
-                        end
-                        return false
+                    -- 고기 획득을 위해 0.1초 간격으로 20번 광클 시도
+                    for i = 1, 20 do
+                        if not AutoFarmEnabled then break end
+                        -- 원격 이벤트(RemoteEvent) 또는 클릭을 통한 획득 시도
+                        -- (게임 환경에 따라 fireclickdetector나 RemoteEvent를 사용하세요)
+                        task.wait(0.1)
                     end
+                    
+                    task.wait(0.5) -- 다음 단계로 넘어가기 전 짧은 대기
 
-                    -- 가득 찰 때까지 광클 (최대 15초 제한)
-                    local timeout = tick() + 15
-                    while AutoFarmEnabled do
-                        getMeat()
-                        task.wait(0.2) -- 0.2초 간격 광클
-                        
-                        -- 가득 찼을 때 뜨는 메시지 및 획득 제한 판단
-                        -- (게임 내 인벤토리 알림이나 최대 소지량에 도달하면 루프 탈출)
-                        if tick() >= timeout then
-                            break
-                        end
-                    end
-
-                    -- 3. 고기 먹기 위치로 이동
+                    -- [2단계] 먹기 위치로 이동
                     if AutoFarmEnabled and lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-12.36, 4.68, -64.56))
-                        task.wait(0.5)
+                        task.wait(0.2)
                     end
 
-                    -- 4. 고기 먹기 실행 및 TP 버그 방지
-                    -- 먹기 버튼 클릭 후 애니메이션이나 먹기가 완료될 때까지 위치 이동 멈춤
-                    print("[AutoFarm] 고기 먹는 중...")
-                    
-                    local function eatMeat()
-                        for _, obj in pairs(workspace:GetDescendants()) do
-                            if obj:IsA("ProximityPrompt") and obj.ObjectText == "먹기" then
-                                fireproximityprompt(obj)
-                                return true
-                            elseif obj:IsA("ClickDetector") and obj.Parent and obj.Parent.Name == "먹기" then
-                                fireclickdetector(obj)
-                                return true
-                            end
-                        end
-                        return false
-                    end
-
-                    eatMeat() -- 먹기 버튼 누르기
-
-                    -- 고기를 다 먹는 시간(의자에서 일어날 때까지) 동안 가만히 대기
-                    -- TP가 다시 발생하지 않도록 딜레이를 줍니다.
-                    local eatDuration = 7 -- 먹는 시간 (초, 게임에 맞게 조절 가능)
+                    -- [3단계] 먹는 동작 수행 및 제자리 고정 (TP 버그 방지)
+                    -- 먹기 동작이 끝날 때까지 7초 동안 다른 동작을 멈춤
+                    local eatDuration = 7
                     local startTime = tick()
-                    
                     while AutoFarmEnabled and (tick() - startTime) < eatDuration do
                         task.wait(1)
                     end
 
-                    -- 5. 설정된 지연 시간 적용
+                    -- 슬라이더에 설정된 지연 시간 적용
                     if AutoFarmEnabled then
                         task.wait(FarmDelay)
                     end
@@ -151,7 +169,7 @@ local AutoFarmToggle = FarmTab:CreateToggle({
         end
     end
 })
-            
+
 
 
 Rayfield:Notify({
