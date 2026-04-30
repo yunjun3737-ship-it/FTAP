@@ -39,16 +39,15 @@ local Window = Rayfield:CreateWindow({
 table.insert(getgenv().RayfieldWindows, Window)
 
 -- 메인 탭 생성
-local FarmTab = Window:CreateTab("오토팜 (Auto Farm)", 4483362458)
+local FarmTab = Window:CreateTab("오토팜", 4483362458)
 local FarmSection = FarmTab:CreateSection("농장 기능")
 
 -- 변수 정의
 local AutoFarmEnabled = false
 local FarmDelay = 1 -- 기본 지연 시간
 
--- 오토팜 토글
 local AutoFarmToggle = FarmTab:CreateToggle({
-    Name = "자동 고기 파밍 켜기",
+    Name = "고기 오토팜",
     CurrentValue = false,
     Flag = "AutoFarmToggle",
     Callback = function(Value)
@@ -62,44 +61,56 @@ local AutoFarmToggle = FarmTab:CreateToggle({
                 Image = 4483362458
             })
             
-            -- 비동기 루프 실행
             task.spawn(function()
                 local lp = game.Players.LocalPlayer
                 
                 while AutoFarmEnabled do
-                    -- 1. 파밍 위치로 이동
+                    -- 1. 파밍 위치로 순간이동 (지연 없음)
                     if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-60.26, 4.70, -61.24))
-                        task.wait(0.2) -- 텔레포트 후 위치 고정을 위한 대기
+                        task.wait(0.2) -- 위치 고정용 짧은 대기
                     end
 
-                    -- 파밍 진행 (버튼 상호작용 시뮬레이션 등)
-                    -- 여기에 실제 고기를 획득하는 함수나 원격 이벤트를 추가할 수 있습니다.
-                    -- 예시: fireclickdetector(game:GetService("Workspace")....ClickDetector)
-                    print("[AutoFarm] 고기 파밍 중... 획득 대기 중...")
+                    -- 2. 고기 획득 버튼(ClickDetector 또는 RemoteEvent) 광클
+                    -- 본인의 게임 내 오브젝트/위치에 맞게 주석을 해제하고 경로를 맞춰주세요.
+                    print("[AutoFarm] 고기 획득 시도 중...")
+                    local farmingTimeout = tick() + 10 -- 무한 루프 방지용 타임아웃 (최대 10초)
                     
-                    -- 고기가 가득 찼는지(또는 파밍이 끝났는지) 확인하는 조건
-                    -- 예시로 5초간 파밍한다고 가정하며, 필요에 맞게 수정하세요.
-                    local maxWait = 5
-                    local timer = 0
-                    while AutoFarmEnabled and timer < maxWait do
-                        task.wait(1)
-                        timer = timer + 1
+                    while AutoFarmEnabled do
+                        -- 고기가 가득 찼는지 확인하는 조건 (게임 내 메시지나 인벤토리 상태에 맞게 수정 필요)
+                        -- 예: if 가득참 then break end
+                        
+                        -- 광클 예시:
+                        -- fireclickdetector(game:GetService("Workspace").FoodButton.ClickDetector)
+                        -- 또는
+                        -- game:GetService("ReplicatedStorage").RemoteEvent:FireServer("GetMeat")
+                        
+                        task.wait(0.1) -- 광클 간격
+                        
+                        -- 타임아웃 도달 시 탈출
+                        if tick() >= farmingTimeout then
+                            warn("[AutoFarm] 파밍 시간 초과로 다음 단계로 이동합니다.")
+                            break
+                        end
                     end
 
-                    -- 2. 고기 먹기 위치로 이동
+                    -- 3. 고기 먹기 위치로 이동
                     if AutoFarmEnabled and lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-12.36, 4.68, -64.56))
                         task.wait(0.2)
                     end
 
-                    -- 고기 먹기 진행
+                
                     print("[AutoFarm] 고기 먹는 중...")
-                    -- 먹는 동안 캐릭터가 멈춰있도록 대기
-                    local eatDuration = 5 -- 먹는 시간 (초)
-                    task.wait(eatDuration)
+                    
+                    local eatDuration = 5 -- 먹는 시간 (초, 게임에 맞게 조절하세요)
+                    local startTime = tick()
+                    
+                    while AutoFarmEnabled and (tick() - startTime) < eatDuration do
+                        task.wait(1)
+                    end
 
-                    -- 3. 설정된 지연 시간 대기 (사용자가 지정한 슬라이더 시간 적용)
+                    -- 5. 설정된 지연 시간 적용
                     if AutoFarmEnabled then
                         task.wait(FarmDelay)
                     end
@@ -116,18 +127,6 @@ local AutoFarmToggle = FarmTab:CreateToggle({
     end
 })
 
--- 슬라이더 추가
-local FarmSpeedSlider = FarmTab:CreateSlider({
-    Name = "파밍 지연 시간 (초)",
-    Range = {0.1, 5},
-    Increment = 0.1,
-    Suffix = "s",
-    CurrentValue = 1,
-    Flag = "FarmSlider",
-    Callback = function(Value)
-        FarmDelay = Value
-    end
-})
 
 Rayfield:Notify({
     Title = "성공",
