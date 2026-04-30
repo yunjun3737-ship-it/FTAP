@@ -1,93 +1,54 @@
+-- Prison Pump - Paca Hub (Delta Executor 추천)
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ActualMasterOogway/PacaHub/main/Library.lua"))()
 
-local Window = Rayfield:CreateWindow({
-    Name = "감옥 펌프 | 파카허브",
-    LoadingTitle = "감옥 펌프 오토팜",
-    LoadingSubtitle = "by paca",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "PrisonPumpHub",
-        FileName = "Delta_Config"
-    },
-    Discord = {
-        Enabled = false,
-    },
-    KeySystem = false
+local Window = Library:CreateWindow({
+    Name = "Prison Pump | Paca Hub",
+    Info = "by Grok",
+    Folder = "PrisonPumpPaca"
 })
 
 -- ================== 메인 탭 ==================
-local MainTab = Window:CreateTab("메인", 4483362458)
+local MainTab = Window:CreateTab("🏠 메인")
 
-local MainSection = MainTab:CreateSection("Auto Farm 설정")
-
--- 예시 버튼 (나중에 기능 넣을 자리)
-MainTab:CreateButton({
-    Name = "Auto Train (운동 자동)",
-    Callback = function()
-        -- 여기에 Auto Train 코드 들어갈 예정
-        Rayfield:Notify({
-            Title = "Auto Train",
-            Content = "기능 준비중...",
-            Duration = 3,
-            Image = 4483362458
-        })
-    end,
-})
+MainTab:CreateSection("Auto Farm")
 
 MainTab:CreateButton({
     Name = "Auto Eat Meat (고기 자동먹기)",
     Callback = function()
-        Rayfield:Notify({
-            Title = "Auto Eat",
-            Content = "고기 자동 먹기 준비중...",
-            Duration = 3
-        })
-    end,
+        Library:Notify("Auto Eat", "고기 자동 먹기 기능 준비중...", 3)
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Auto Train (자동 운동)",
+    Callback = function()
+        Library:Notify("Auto Train", "자동 운동 기능 준비중...", 3)
+    end
 })
 
 MainTab:CreateToggle({
-    Name = "Infinite Stamina (무한 스테미나)",
-    CurrentValue = false,
-    Flag = "InfStamina",
+    Name = "Infinite Stamina",
+    Default = false,
     Callback = function(Value)
-        -- 나중에 무한 스테미나 코드
-    end,
+        Library:Notify("Infinite Stamina", "현재 준비중입니다.", 2)
+    end
 })
 
--- ================== 윈도우 탭 (설정 / 기타) ==================
-local SettingsTab = Window:CreateTab("⚙️ 설정", 4483362458)
+-- ================== 설정 탭 ==================
+local SettingsTab = Window:CreateTab("⚙️ 설정")
 
-local SettingsSection = SettingsTab:CreateSection("기타 옵션")
-
-SettingsTab:CreateButton({
-    Name = "Teleport to Spawn",
-    Callback = function()
-        Rayfield:Notify({Title = "Teleport", Content = "스폰으로 이동합니다 (준비중)", Duration = 2})
-    end,
-})
-
-SettingsTab:CreateSlider({
-    Name = "WalkSpeed",
-    Range = {16, 200},
-    Increment = 1,
-    CurrentValue = 16,
-    Flag = "WalkSpeed",
-    Callback = function(Value)
-        -- 나중에 워크스피드 코드
-    end,
-})
+SettingsTab:CreateSection("기타 옵션")
 
 SettingsTab:CreateButton({
     Name = "Destroy GUI",
     Callback = function()
-        Rayfield:Destroy()
-    end,
+        Window:Destroy()
+    end
 })
 
-Rayfield:Notify({
-    Title = "로드 완료",
-    Content = "Prison Pump Rayfield Hub가 로드되었습니다.\n기능은 아직 추가 전입니다.",
-    Duration = 5,
-    Image = 4483362458
+Library:Notify({
+    Title = "로드 완료 ✅",
+    Content = "Prison Pump Paca Hub가 로드되었습니다!\n원하는 기능 말해주면 바로 넣어줄게.",
+    Duration = 5
 })
