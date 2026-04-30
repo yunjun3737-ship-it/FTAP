@@ -1,11 +1,34 @@
 -- Prison Pump | Paca Hub (최신 안정 버전 - 2026)
 -- Delta Executor에서 사용
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ActualMasterOogway/PacaHub/main/Library.lua", true))()
+- ================== Rayfield 안정 버전 (Build Mismatch 해결) ==================
+print("Rayfield 로드 시작...")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+print("이스크립트는 알파카에의해 만들어졌습니다.")
+Players = game:GetService("Players")
+plr = game.Players.LocalPlayer
+cam = workspace.CurrentCamera
+mouse = plr:GetMouse()
+uis = game:GetService("UserInputService")
+inv = workspace:WaitForChild(plr.Name.."SpawnedInToys")
+rs = game:GetService("ReplicatedStorage")
+RepStorage = game:GetService("ReplicatedStorage")
+rs2 = game:GetService("RunService")
+deb = game:GetService("Debris")
 
+SetNetworkOwner = rs.GrabEvents.SetNetworkOwner
+DestroyGrabLine = rs.GrabEvents.DestroyGrabLine
+
+Auto = syn and syn.queue_on_teleport or fluxus and fluxus.queue_on_teleport or queue_on_teleport
+
+Whitelist = {}
+playersInLoop1V = {} -- List
+playersInLoop2V = {} -- Loop
+
+PPs = workspace:WaitForChild("Plot
 local Window = Library:CreateWindow({
     Name = "Prison Pump | Paca Hub",
-    Info = "by Grok • Delta",
+    Info = "by alpa • Delta",
     Folder = "PrisonPumpPaca"
 })
 
