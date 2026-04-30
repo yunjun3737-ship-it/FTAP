@@ -1,9 +1,19 @@
-ame:HttpGet('https://sirius.menu/rayfield'))()
+-- 중복 실행 방지: 이전에 켜져 있던 UI가 있다면 제거
+if getgenv().RayfieldWindows then
+    for _, win in pairs(getgenv().RayfieldWindows) do
+        win:Destroy()
+    end
+    getgenv().RayfieldWindows = {}
+else
+    getgenv().RayfieldWindows = {}
+end
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "감옥 펌프 오토팜 (Prison Farm)",
     LoadingTitle = "Alpaca's Script Interface",
-    LoadingSubtitle = "by Alpaca", -- 제작자 이름 변경
+    LoadingSubtitle = "by Alpaca",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil, 
@@ -28,14 +38,12 @@ local Window = Rayfield:CreateWindow({
 
 table.insert(getgenv().RayfieldWindows, Window)
 
--- 메인 탭 생성
-local FarmTab = Window:CreateTab("오토팜", 4483362458)
+local FarmTab = Window:CreateTab("오토팜 (Auto Farm)", 4483362458)
 local FarmSection = FarmTab:CreateSection("농장 기능")
 
--- 변수 정의
+-- 전역 변수 설정
 local AutoFarmEnabled = false
-local FarmDelay = 1 -- 기본 지연 시간
-
+local FarmDelay = 1
 
 -- 오토팜 토글
 local AutoFarmToggle = FarmTab:CreateToggle({
@@ -57,37 +65,59 @@ local AutoFarmToggle = FarmTab:CreateToggle({
                 local lp = game.Players.LocalPlayer
                 
                 while AutoFarmEnabled do
-                    -- [1단계] 고기 획득 위치로 이동 및 광클
+                    -- 1단계: 파밍 위치로 이동
                     if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-60.26, 4.70, -61.24))
-                        task.wait(0.2) -- 텔레포트 지연
+                        task.wait(0.5) -- 순간이동 후 위치 고정 대기
                     end
 
-                    -- 고기 획득을 위해 0.1초 간격으로 20번 광클 시도
-                    for i = 1, 20 do
-                        if not AutoFarmEnabled then break end
-                        -- 원격 이벤트(RemoteEvent) 또는 클릭을 통한 획득 시도
-                        -- (게임 환경에 따라 fireclickdetector나 RemoteEvent를 사용하세요)
-                        task.wait(0.1)
+                    -- 2단계: 모바일/PC 상관없이 '음식 잡기' 상호작용 강제 실행 (광클 방식)
+                    print("[AutoFarm] 음식 잡기 시도 중...")
+                    local function interactWithFood()
+                        for _, v in pairs(workspace:GetDescendants()) do
+                            if v:IsA("ProximityPrompt") and (v.ObjectText == "음식 잡기" or v.ActionText == "음식 잡기") then
+                                fireproximityprompt(v)
+                                return true
+                            end
+                        end
+                        return false
                     end
-                    
-                    task.wait(0.5) -- 다음 단계로 넘어가기 전 짧은 대기
 
-                    -- [2단계] 먹기 위치로 이동
+                    -- 최대 15초 동안 음식 잡기 시도 (인벤토리가 가득 찰 때까지)
+                    local startTime = tick()
+                    while AutoFarmEnabled and (tick() - startTime) < 15 do
+                        interactWithFood()
+                        task.wait(0.2) -- 0.2초 간격으로 연속 클릭/실행
+                    end
+
+                    -- 3단계: 고기 먹기 위치로 이동
                     if AutoFarmEnabled and lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                         lp.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-12.36, 4.68, -64.56))
-                        task.wait(0.2)
+                        task.wait(0.5)
                     end
 
-                    -- [3단계] 먹는 동작 수행 및 제자리 고정 (TP 버그 방지)
-                    -- 먹기 동작이 끝날 때까지 7초 동안 다른 동작을 멈춤
+                    -- 4단계: 먹기 상호작용 실행 후, 먹는 시간(7초) 동안 제자리 고정
+                    print("[AutoFarm] 고기 먹는 중...")
+                    local function interactWithEat()
+                        for _, v in pairs(workspace:GetDescendants()) do
+                            if v:IsA("ProximityPrompt") and (v.ObjectText == "먹기" or v.ActionText == "먹기") then
+                                fireproximityprompt(v)
+                                return true
+                            end
+                        end
+                        return false
+                    end
+
+                    interactWithEat()
+
+                    -- 고기를 다 먹을 때까지(일어날 때까지) 대기하여 무한 텔레포트 방지
                     local eatDuration = 7
-                    local startTime = tick()
-                    while AutoFarmEnabled and (tick() - startTime) < eatDuration do
+                    local eatStartTime = tick()
+                    while AutoFarmEnabled and (tick() - eatStartTime) < eatDuration do
                         task.wait(1)
                     end
 
-                    -- 슬라이더에 설정된 지연 시간 적용
+                    -- 5단계: 설정된 지연 시간(슬라이더) 적용
                     if AutoFarmEnabled then
                         task.wait(FarmDelay)
                     end
@@ -104,7 +134,18 @@ local AutoFarmToggle = FarmTab:CreateToggle({
     end
 })
 
-
+-- 슬라이더 추가
+local FarmSpeedSlider = FarmTab:CreateSlider({
+    Name = "파밍 지연 시간 (초)",
+    Range = {0.1, 5},
+    Increment = 0.1,
+    Suffix = "s",
+    CurrentValue = 1,
+    Flag = "FarmSlider",
+    Callback = function(Value)
+        FarmDelay = Value
+    end
+})
 
 Rayfield:Notify({
     Title = "성공",
